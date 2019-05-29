@@ -8,14 +8,13 @@ function buildMetadata(sample) {
           
     // Use d3 to select the panel with id of `#sample-metadata`  
     // Use `.html("") to clear any existing metadata
-      const metadata = d3.select('#sample-metadata').html("")
-      console.log('something please');
+      const metadata = d3.select('#sample-metadata').html("");
     // Use `Object.entries` to add each key and value pair to the panel
     // Hint: Inside the loop, you will need to use d3 to append new
     // tags for each key-value in the metadata.
       Object.entries(response).forEach(function(key, value) {
-        metadata.enter().append('p')
-        .text(`${key} : ${value}`);
+        metadata.append('p')
+        .text(`${key} ${value}`);
       }
 
     // BONUS: Build the Gauge Chart
@@ -27,17 +26,27 @@ function buildMetadata(sample) {
 function buildCharts(sample) {
 
   // @TODO: Use `d3.json` to fetch the sample data for the plots
-  d3.json(`/sample/${sample}`).then(function(response) {
+  d3.json(`/samples/${sample}`).then(function(response) {
         // @TODO: Build a Bubble Chart using the sample data
-    var data = [response]
-    
+    console.log(response.otu_ids)
+    data = [{
+      x: response.otu_ids,
+      y: response.sample_values,
+      'type': 'scatter',
+      'mode' : 'markers',
+      'marker' : {
+        'colorscale' : 'Picnic',
+        'size'  : response.sample_values,
+        'color' : response.otu_ids
+      }
+    }]
     var layout = {
       title: 'Belly Button Biodiversity'
-        
-      
+            
     };
-  
-    Plotly.newPlot('#bubble', data, layout)
+
+  //OTU values by sample_values 
+    Plotly.newPlot('bubble', data, layout)
   })
     // @TODO: Build a Pie Chart
     // HINT: You will need to use slice() to grab the top 10 sample_values,
