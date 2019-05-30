@@ -13,13 +13,15 @@ function buildMetadata(sample) {
     // Hint: Inside the loop, you will need to use d3 to append new
     // tags for each key-value in the metadata.
       Object.entries(response).forEach(function(key, value) {
+        var string = key
+        string = string.split(',')
         metadata.append('p')
-        .text(`${key} ${value}`);
-      }
+        .html(`<strong>${string[0]}: </strong> ${string[1]}`);
+      });
 
     // BONUS: Build the Gauge Chart
     // buildGauge(data.WFREQ);
-      )
+      
   })
 }
 
@@ -28,7 +30,6 @@ function buildCharts(sample) {
   // @TODO: Use `d3.json` to fetch the sample data for the plots
   d3.json(`/samples/${sample}`).then(function(response) {
         // @TODO: Build a Bubble Chart using the sample data
-    console.log(response.otu_ids)
     data = [{
       x: response.otu_ids,
       y: response.sample_values,
@@ -41,16 +42,35 @@ function buildCharts(sample) {
       }
     }]
     var layout = {
-      title: 'Belly Button Biodiversity'
-            
+      title: 'Belly Button Biodiversity',
+      xaxis : {
+        title : 'otu_id'
+      },
+      yaxis : {
+        title : 'sample value'
+      }      
     };
 
   //OTU values by sample_values 
     Plotly.newPlot('bubble', data, layout)
-  })
+  
     // @TODO: Build a Pie Chart
     // HINT: You will need to use slice() to grab the top 10 sample_values,
     // otu_ids, and labels (10 each).
+    var topTenIDs = response.otu_ids.sort(d3.descending).slice(0,10);
+    var topTenSamples = response.sample_values.sort(d3.descending).slice(0,10);
+    
+    var data2 = [{
+        labels: topTenIDs,
+        values: topTenSamples,
+        'type': 'pie' 
+    }];
+    
+    var layout2 = {
+      title: 'Belly Button Biodiversity: Top 10 Samples',
+          }
+    Plotly.newPlot('pie', data2, layout)
+})
 }
 
 function init() {
